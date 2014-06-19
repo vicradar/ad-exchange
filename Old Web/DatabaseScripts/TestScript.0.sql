@@ -1,0 +1,6 @@
+CREATE TABLE TestTable (
+	id INT(11) PRIMARY KEY AUTO_INCREMENT,
+	name VARCHAR(16) NOT NULL,
+	description VARCHAR(255)
+);
+----

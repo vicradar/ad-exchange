@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><?php echo $title; ?></title>
+	<script src="/Script/jQuery-2.1.0.min.js"></script>
+	<script>
+		var templates = {<?php 
+				$items = array();
+				foreach ($methods as $key => $value) {
+					$key = addslashes($key);
+					$value = addslashes($value);
+					$items[] = "\"$key\": \"$value\""; 
+				}
+				echo implode(", ", $items);
+		?>};
+		function updateTemplate() {
+			var selectedMethod = $("#methodSelect option:selected").text();
+			var template = templates[selectedMethod];
+			$("#parameters").val(template);
+		}
+		$(document).ready(function() {
+			$("#execute").click(function() {
+				var parsedParams = null;
+				try {
+					parsedParams = $.parseJSON($("#parameters").val());
+				}
+				catch (parseErr) {
+					alert("Failed to parse the parameters. Please Fix and try again.");
+					return;
+				}
+
+				 var body = {
+				 	"id" : Math.floor(Math.random() * 10000),
+				 	"method" : $("#methodSelect option:selected").text(),
+				 	"params" : parsedParams
+				 };
+
+				 $.post(window.location.pathname,
+				 	JSON.stringify(body),
+				 	function(data) {
+				 		alert("Request Complete");
+				 		$("#result").val(data);
+				 	});
+
+			});
+
+			$("#methodSelect").change(updateTemplate);
+			updateTemplate();
+		});
+	</script>
+	<style>
+		#root {
+			max-width: 700px;
+			border: 1px solid black;
+			margin: 10px 20px 10px 20px;
+			padding: 10px;
+		}
+
+		#root hr {
+			margin: 20px;
+		}
+
+		textarea {
+		    width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div id="root">
+		<div>
+			<span>Methods</span>
+			<select id="methodSelect">
+				<?php
+					foreach ($methods as $key => $value) {
+						echo "<option>$key</option>";
+					}
+				?>
+
+			</select>
+		</div>
+		<div class="textBoxWrapper">
+			<textarea id="parameters"></textarea>
+		</div>
+		<button id="execute">Execute</button>
+		<hr />
+		<div class="textBoxWrapper">
+			<textarea id="result"></textarea>
+		</div>
+	</div>
+</body>
+</html>
